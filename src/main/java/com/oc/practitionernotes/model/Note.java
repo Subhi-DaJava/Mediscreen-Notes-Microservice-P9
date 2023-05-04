@@ -1,27 +1,38 @@
 package com.oc.practitionernotes.model;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.*;
+import java.time.LocalDate;
+import java.util.Objects;
 
 @Document(collection = "notes")
 public class Note {
     @Id
     private String id;
+
+    @NotNull(message = "Patient Id is mandatory")
+    @Min(1)
     private Long patId;
+
+    @NotBlank(message = "Patient LastName is mandatory")
+    //@Pattern(regexp = "^[A-Z][a-zA-Z]{2,}$", message = "The lastName field must contain at least 3 letters and the first letter should be capital.")
+    @Pattern(regexp = "^[A-Z][aA-zA-Z0-9\\s]{2,}$", message = "The lastName field must contain at least 3 letters and the first letter should be capital.")
     private String patLastName;
+
     private String comment;
-    private LocalDateTime localDateTime;
+    @NotNull(message = "createdAt is mandatory")
+    @Past(message = "createdAt must be in the past")
+    private LocalDate createdAt;
 
     public Note() {
     }
 
-    public Note(Long patId, String patLastName, String comment) {
+    public Note(Long patId, String patLastName, String comment, LocalDate createdAt) {
         this.patId = patId;
         this.patLastName = patLastName;
         this.comment = comment;
-        this.localDateTime = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 
     public String getId() {
@@ -56,22 +67,34 @@ public class Note {
         this.comment = comment;
     }
 
-    public LocalDateTime getLocalDateTime() {
-        return localDateTime;
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
-    public void setLocalDateTime(LocalDateTime localDateTime) {
-        this.localDateTime = localDateTime;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
     public String toString() {
         return "Note{" +
-                "id='" + id + '\'' +
-                ", patId=" + patId +
+                "patId=" + patId +
                 ", patLastName='" + patLastName + '\'' +
                 ", comment='" + comment + '\'' +
-                ", localDateTime=" + localDateTime +
+                ", createdAt=" + createdAt +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Note note = (Note) o;
+        return Objects.equals(id, note.id) && Objects.equals(patId, note.patId) && Objects.equals(patLastName, note.patLastName) && Objects.equals(comment, note.comment) && Objects.equals(createdAt, note.createdAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, patId, patLastName, comment, createdAt);
     }
 }

@@ -8,8 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
-@CrossOrigin(origins = "http://localhost:8082")
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/notes")
 public class NoteController {
@@ -20,6 +21,13 @@ public class NoteController {
         this.noteService = noteService;
     }
 
+    @GetMapping
+    public List<Note> getAllNotes() {
+        logger.debug("getAllNotes starts here from NoteController");
+        List<Note> notes = noteService.getAllNotes();
+        logger.info("All Notes have been successfully retrieved, from NoteController");
+        return notes;
+    }
     @GetMapping("/by-patId/{patId}")
     public ResponseEntity<List<Note>> getAllNotesOfPatientPatId(@PathVariable Long patId) {
         logger.debug("getAllNotesOfPatientByPatId starts here, from NoteController");
@@ -37,15 +45,15 @@ public class NoteController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Note> addNote(@RequestBody Note note) {
+    public ResponseEntity<Note> addNote(@RequestBody @Valid Note note) {
         logger.debug("addNote starts here, from NoteController");
-        Note noteSaved = noteService.saveNote(new Note(note.getPatId(), note.getPatLastName(), note.getComment()));
+        Note noteSaved = noteService.saveNote(new Note(note.getPatId(), note.getPatLastName(), note.getComment(), note.getCreatedAt()));
         logger.info("New note with pathPatId:{} and lastName:{} has been successfully saved, from NoteController", note.getPatId(), note.getPatLastName());
         return new ResponseEntity<>(noteSaved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Note> updateById(@PathVariable String id, @RequestBody Note note) {
+    public ResponseEntity<Note> updateById(@PathVariable String id, @RequestBody @Valid Note note) {
         logger.debug("updateById starts here, from NoteController");
         Note noteUpdated = noteService.updateNoteById(id, note);
         logger.info("Note with id:{} has been successfully updated, from NoteController", id);
@@ -63,4 +71,21 @@ public class NoteController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Note> getNoteById(@PathVariable String id) {
+        logger.debug("getNoteById method starts here, from NoteController");
+        Note noteById = noteService.getNoteById(id);
+        logger.info("Note with id:{} has been successfully retrieved, from NoteController", id);
+        return ResponseEntity.ok(noteById);
+    }
+
+    @PostMapping("/{patId}")
+    public ResponseEntity<Note> addNoteToPatientByPatId(@PathVariable Long patId, @RequestParam String note) {
+        logger.debug("addNoteToPatientByPatId starts here, from NoteController");
+        Note noteSaved = noteService.addNoteByPatId(patId, note);
+        logger.info("New note with pathPatId:{} and lastName:{} has been successfully saved, from NoteController", patId, noteSaved.getPatLastName());
+        return new ResponseEntity<>(noteSaved, HttpStatus.CREATED);
+    }
+
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface NoteService {
     List<Note> getPatientAllNotesByPatientId(Long id);
+
     List<Note> getPatientAllNotesByPatientLastName(String lastName);
 
     Note saveNote(Note note);
@@ -15,4 +16,10 @@ public interface NoteService {
 
 
     void deleteById(String id);
+
+    List<Note> getAllNotes();
+
+    Note getNoteById(String id);
+
+    Note addNoteByPatId(Long patId, String note);
 }
