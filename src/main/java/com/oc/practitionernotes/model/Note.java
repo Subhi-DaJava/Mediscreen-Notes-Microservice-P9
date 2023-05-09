@@ -22,7 +22,7 @@ public class Note {
 
     private String comment;
     @NotNull(message = "createdAt is mandatory")
-    @Past(message = "createdAt must be in the past")
+    //@Past(message = "createdAt must be in the past")
     private LocalDate createdAt;
 
     public Note() {
