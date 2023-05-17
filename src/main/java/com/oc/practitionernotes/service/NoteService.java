@@ -2,7 +2,6 @@ package com.oc.practitionernotes.service;
 
 import com.oc.practitionernotes.model.Note;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface NoteService {
